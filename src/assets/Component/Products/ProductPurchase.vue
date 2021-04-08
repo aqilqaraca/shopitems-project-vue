@@ -1,0 +1,92 @@
+<template>
+    <div class="container">
+        <div class="loading" :style="isLoading">
+    <div class="lds-ripple">
+        <div></div>
+        <div></div>
+    </div>
+</div>
+    <div class="row">
+        <div class="col-6 offset-3 pt-3 card mt-5 mb-5 shadow">
+            <div class="card-body">
+                <h3>Product processing</h3>
+                <hr>
+                <div class="form-group">
+                    <label>Product name</label>
+                    <input v-model="product.title" type="text" class="form-control" placeholder="Enter the product name..">
+                </div>
+                <div class="form-group">
+                    <label>Piece</label>
+                    <input v-model="product.count" type="number" class="form-control" placeholder="Enter the product piece..">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input v-model="product.price" type="number" class="form-control" placeholder="Enter the product price..">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea v-model="product.description" cols="30" rows="5" placeholder="Enter the product description..." class="form-control"></textarea>
+                </div>
+                <hr>
+                <button class="btn btn-primary" :disabled="!saveEnabled" @click="saveProduct">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+</template>
+
+<script>
+export default {
+    data(){
+        return{
+            product : {
+                title : "",
+                count : null,
+                price : null,
+                description : "",
+                
+            },
+            saveButtonClick : false
+        }
+    },
+    methods : {
+        saveProduct(){
+            this.$store.dispatch("saveProduct",this.product)
+            this.saveButtonClick = true
+        }
+    },
+    computed : {
+        saveEnabled(){
+            if(this.product.title.length > 0 && this.product.count > 0 && this.product.description.length>0 && this.product.price > 0){
+                return true
+            }else{
+                return false
+            }
+        },
+        isLoading(){
+            if(this.saveButtonClick){
+                return{
+                    display : "block"
+                }
+            }else{
+                return{
+                display : "none" }
+            }
+        }
+    },
+    beforeRouteLeave(to,from,next){
+        if((this.product.title.length > 0 || this.product.count > 0 || this.product.description.length > 0 || this.product.price > 0) && !this.saveButtonClick){
+            if(confirm("Data doesn't save. Are you sure you want to quit?")){
+                next()
+            }
+            else{
+                next(false)
+            }
+        }else{
+            next()
+        }
+        
+       
+    }
+}
+</script>
